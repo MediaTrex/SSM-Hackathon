@@ -31,5 +31,5 @@ For the frontend , in new terminal
 cd frontend
 npm run dev
 ```
-
-Visit <a>http://localhost:5173</a>
+Now, Visit 
+<a>http://localhost:5173</a>
