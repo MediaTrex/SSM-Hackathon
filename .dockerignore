@@ -1,0 +1,48 @@
+# Python cache & build artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.egg-info/
+*.egg
+build/
+dist/
+
+# Virtual environments
+venv/
+.env/
+.venv/
+
+# Environment & config files
+*.env
+.env.*
+secrets.json
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDE & editor settings
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+logs/
+
+# Tests (optional if not needed in container)
+tests/
+
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
