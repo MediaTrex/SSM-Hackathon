@@ -1,6 +1,6 @@
 # SSM Hackathon 
 
-Team Name: 
+Team Name: </b>
 Project Title: **LinuxAI Operations Assistant**
 
 ## Problem Statement
