@@ -23,7 +23,7 @@ GEMINI_API_KEY=
 If you using Window then kindly run the Docker. </br>
 For backend, we use **Ubuntu Container** as **linux**
 ```
-docker-build up --build
+docker-compose up --build
 ```
 
 For the frontend , in new terminal
