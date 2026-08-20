@@ -1,5 +1,8 @@
 # SSM Hackathon 
 
+Team Name: 
+Project Title: **LinuxAI Operations Assistant**
+
 ## Problem Statement
 
 <b>Integration of AI capabilities in the OS ecosystem(Linux Based) Submission Page</b>
