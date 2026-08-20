@@ -13,12 +13,20 @@ Our solution is an **AI-powered Linux Operations Assistant** that acts as an int
 
 ## TO QUICK START 
 
+Setup **.env** file in the root directory
+```
+GEMINI_API_KEY=
+```
+If you using Window then kindly run the Docker. </br>
+For backend, we use **Ubuntu Container** as **linux**
 ```
 docker-build up --build
 ```
 
-In new terminal
+For the frontend , in new terminal
 ```
 cd frontend
 npm run dev
 ```
+
+Visit <a>http://localhost:5173</a>
