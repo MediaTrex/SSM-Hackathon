@@ -1,9 +1,11 @@
+<img src="../linuxai/docs/banner.png" alt="LinuxAI Banner" width="100%">
+
 # SSM Hackathon 
 
-Team Name: Tech nuggets<br>
 Project Title: **LinuxAI Operations Assistant**
 
 ## Contributors
+Team Name: Tech nuggets<br>
 | Member   | Responsibility                              |
 | -------- | ------------------------------------------- |
 | Roshan Patel | AI Agent + LLM + Tool Calling               |
