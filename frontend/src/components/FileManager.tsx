@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Folder, FileText, CornerLeftUp, RefreshCw } from 'lucide-react';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 export const FileManager = () => {
   const [items, setItems] = useState<any[]>([]);
@@ -50,16 +50,16 @@ export const FileManager = () => {
 
   return (
     <div className="p-8 max-w-6xl mx-auto w-full flex flex-col h-full space-y-4">
-      
+
       <div className="flex justify-between items-end border-b border-linux-border pb-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-linux-text-primary">FILES</h1>
           <div className="flex items-center gap-2 mt-1">
-            <button onClick={navigateUp} className="text-linux-text-muted hover:text-linux-text-primary"><CornerLeftUp size={14}/></button>
+            <button onClick={navigateUp} className="text-linux-text-muted hover:text-linux-text-primary"><CornerLeftUp size={14} /></button>
             <p className="text-sm text-linux-text-secondary mono">{currentPath}</p>
           </div>
         </div>
-        <button 
+        <button
           onClick={() => fetchFiles(currentPath)}
           disabled={loading}
           className="flex items-center gap-2 px-3 py-1.5 bg-linux-surface border border-linux-border rounded text-xs mono hover:bg-linux-card transition-colors disabled:opacity-50"
@@ -82,7 +82,7 @@ export const FileManager = () => {
             <div className="col-span-2 text-right">SIZE</div>
             <div className="col-span-2 text-right">MODIFIED</div>
           </div>
-          
+
           <div className="flex-1 overflow-y-auto">
             {loading && items.length === 0 ? (
               <div className="flex items-center justify-center h-full mono text-linux-text-muted text-sm">Reading directory...</div>
@@ -93,8 +93,8 @@ export const FileManager = () => {
                   if (!a.is_dir && b.is_dir) return 1;
                   return a.name.localeCompare(b.name);
                 }).map((item, i) => (
-                  <div 
-                    key={i} 
+                  <div
+                    key={i}
                     className="grid grid-cols-12 p-3 text-sm hover:bg-linux-surface/50 transition-colors group cursor-pointer"
                     onClick={() => {
                       if (item.is_dir) fetchFiles(item.path);

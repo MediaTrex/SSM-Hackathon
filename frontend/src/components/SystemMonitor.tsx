@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Cpu, Server, Hash, Layers } from 'lucide-react';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 export const SystemMonitor = () => {
   const [identity, setIdentity] = useState<any>(null);
@@ -65,7 +65,7 @@ export const SystemMonitor = () => {
 
   return (
     <div className="p-8 max-w-6xl mx-auto w-full space-y-8">
-      
+
       <div className="flex justify-between items-end border-b border-linux-border pb-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-linux-text-primary">SYSTEM INFORMATION</h1>

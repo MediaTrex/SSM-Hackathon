@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Search, Pause, Play, XCircle } from 'lucide-react';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 export const ProcessViewer = () => {
   const [processes, setProcesses] = useState<any[]>([]);
@@ -54,7 +54,7 @@ export const ProcessViewer = () => {
 
   return (
     <div className="p-8 max-w-6xl mx-auto w-full flex flex-col h-full space-y-4">
-      
+
       <div className="flex justify-between items-end border-b border-linux-border pb-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-linux-text-primary">PROCESSES</h1>
@@ -63,16 +63,16 @@ export const ProcessViewer = () => {
         <div className="flex items-center gap-4">
           <div className="relative">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-linux-text-muted" />
-            <input 
-              type="text" 
-              placeholder="Search processes..." 
+            <input
+              type="text"
+              placeholder="Search processes..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-9 pr-4 py-1.5 bg-linux-surface border border-linux-border rounded text-sm mono focus:outline-none focus:border-linux-accent/50 text-linux-text-primary"
             />
           </div>
-          <button 
-            onClick={() => setIsPaused(!isPaused)} 
+          <button
+            onClick={() => setIsPaused(!isPaused)}
             className="flex items-center gap-2 px-3 py-1.5 bg-linux-surface border border-linux-border rounded text-xs mono hover:bg-linux-card transition-colors"
           >
             {isPaused ? <Play size={14} /> : <Pause size={14} />}
@@ -89,7 +89,7 @@ export const ProcessViewer = () => {
           <div className="col-span-1 text-right">CPU %</div>
           <div className="col-span-1 text-right">MEM %</div>
         </div>
-        
+
         <div className="flex-1 overflow-y-auto">
           {loading ? (
             <div className="flex items-center justify-center h-full mono text-linux-text-muted text-sm">Loading running processes...</div>
@@ -107,7 +107,7 @@ export const ProcessViewer = () => {
                   </div>
                   <div className="col-span-1 flex items-center justify-end gap-4">
                     <span className="text-linux-info">{proc.memory_percent ? proc.memory_percent.toFixed(1) : '0.0'}%</span>
-                    <button 
+                    <button
                       onClick={() => terminateProcess(proc.pid)}
                       className="opacity-0 group-hover:opacity-100 text-linux-warning hover:text-red-400 transition-opacity"
                       title="Terminate Process"
