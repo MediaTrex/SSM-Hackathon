@@ -14,6 +14,10 @@ Team Name: Tech nuggets<br>
 | Sreekuttan S | Filesystem + Processes + Services + Testing |
 | Vipul Raj Shah | Backend + Security + APIs + ML Engineer  |                  |
 
+<a href="https://github.com/MediaTrex/SSM-Hackathon/graphs/contributors">
+  <img src="https://contributors-img.web.app/image?repo=MediaTrex/SSM-Hackathon"  />
+</a>
+
 ## Problem Statement
 
 <b>Integration of AI capabilities in the OS ecosystem(Linux Based) Submission Page</b>
