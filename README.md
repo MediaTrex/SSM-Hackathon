@@ -45,6 +45,12 @@ npm run dev
 Now, Visit 
 <a>http://localhost:5173</a>
 
+## Live Demo
+
+**🔗 Deployed App:** [https://ssm-hackathon-wine.vercel.app/](https://ssm-hackathon-wine.vercel.app/)
+
+---
+
 ## Project Screenshots
 
 ### LinuxAI - Complete UI Overview
