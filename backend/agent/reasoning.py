@@ -7,6 +7,7 @@ import google.generativeai as genai
 from agent.tools import execute_tool, AVAILABLE_TOOLS
 import inspect
 from agent.formatter import format_tool_result
+from api.activity_store import log_activity
 
 # Configure Gemini
 api_key = os.getenv("GEMINI_API_KEY", "")
@@ -38,6 +39,14 @@ def check_approval(message: str) -> str:
             return "reject"
             
     return "unknown"
+
+def get_event_type(tool_name: str) -> str:
+    if "file" in tool_name or "directory" in tool_name: return "Files"
+    if "service" in tool_name: return "Services"
+    if "process" in tool_name: return "Processes"
+    if "network" in tool_name: return "Network"
+    if "system" in tool_name or "cpu" in tool_name or "memory" in tool_name or "gpu" in tool_name or "disk" in tool_name: return "System"
+    return "AI"
 
 def handle_chat_request(message: str, conversation_id: str = "default"):
     if not model:
@@ -86,17 +95,24 @@ def handle_chat_request(message: str, conversation_id: str = "default"):
                 if tool_name == "change_directory" and result.get("success"):
                     session["working_directory"] = result.get("path")
                 
+                target = args.get("path") or args.get("service_name") or args.get("pid") or ""
+                log_activity(get_event_type(tool_name), tool_name, str(target), "success" if result.get("success") else "failed", response_text)
+                
                 return {
                     "response": response_text,
                     "metadata": {"tools_used": [tool_name], "execution_time": round(time.time() - start_time, 2)}
                 }
             except Exception as e:
+                log_activity(get_event_type(tool_name), tool_name, str(args.get("path") or args.get("service_name") or args.get("pid") or ""), "failed", str(e))
                 return {
                     "response": f"Failed to execute {tool_name}: {str(e)}",
                     "metadata": {"tools_used": [tool_name], "execution_time": round(time.time() - start_time, 2)}
                 }
                 
         elif decision == "reject":
+            action = session["pending_action"]
+            target = action["args"].get("path") or action["args"].get("service_name") or action["args"].get("pid") or ""
+            log_activity(get_event_type(action["tool"]), action["tool"], str(target), "cancelled", "Action was cancelled by user.")
             session["pending_action"] = None
             return {
                 "response": "Understood. I have cancelled the pending action.",
@@ -236,6 +252,15 @@ What is your next step? (Choose one TOOL or FINAL_ANSWER)
                     }
                 else:
                     result_data = tool_result.get('result', {})
+                    
+                    target = tool_args.get("path") or tool_args.get("service_name") or tool_args.get("pid") or ""
+                    log_status = "success" if tool_result.get("status") == "success" else "failed"
+                    # If there's an error, log it
+                    log_details = format_tool_result(tool_to_run, result_data, session["working_directory"])
+                    if tool_result.get("status") == "error":
+                        log_details = tool_result.get("error", "Unknown error")
+                    
+                    log_activity(get_event_type(tool_to_run), tool_to_run, str(target), log_status, log_details)
                     
                     # Intercept safe action formatting and state updates immediately
                     if tool_to_run == "change_directory" and result_data.get("success"):
