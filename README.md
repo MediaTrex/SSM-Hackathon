@@ -1,4 +1,4 @@
-<img src="../linuxai/docs/banner.png" alt="LinuxAI Banner" width="100%">
+![LinuxAI Banner](../linuxai/docs/banner.png)
 
 # SSM Hackathon 
 
