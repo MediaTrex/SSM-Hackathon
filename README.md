@@ -47,9 +47,13 @@ Now, Visit
 
 ## Live Demo
 
-**🔗 Deployed App:** [https://ssm-hackathon-wine.vercel.app/](https://ssm-hackathon-wine.vercel.app/)
+**Deployed App:** [https://ssm-hackathon-wine.vercel.app/](https://ssm-hackathon-wine.vercel.app/)
 
----
+
+## Demo video
+
+[https://youtu.be/gYflrm_R7FE](https://youtu.be/gYflrm_R7FE)
+
 
 ## Project Screenshots
 
