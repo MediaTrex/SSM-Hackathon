@@ -16,7 +16,22 @@ AVAILABLE_TOOLS = {
     "get_service_status": services.get_service_status,
     "get_service_logs": services.get_service_logs,
     "search_files": files.search_files,
-    "get_file_information": files.get_file_information
+    "get_file_information": files.get_file_information,
+    "read_file": files.read_file,
+    "list_directory": files.list_directory,
+    "get_file_permissions": files.get_file_permissions,
+    "create_file": files.create_file,
+    "write_file": files.write_file,
+    "append_file": files.append_file,
+    "rename_file": files.rename_file,
+    "copy_file": files.copy_file,
+    "delete_file": files.delete_file,
+    "delete_directory": files.delete_directory,
+    "get_working_directory": files.get_working_directory,
+    "change_directory": files.change_directory,
+    "get_uptime": system_info.get_uptime,
+    "get_load_average": system_info.get_load_average,
+    "list_services": services.list_services
 }
 
 def execute_tool(tool_name: str, **kwargs):

@@ -1,10 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { Terminal, Activity, Cpu, HardDrive } from 'lucide-react';
+import { Sidebar } from './components/Sidebar';
+import { Topbar } from './components/Topbar';
+import { Dashboard } from './components/Dashboard';
+import { AiAssistant } from './components/AiAssistant';
+import { SystemMonitor } from './components/SystemMonitor';
+import { ProcessViewer } from './components/ProcessViewer';
+import { ServiceManager } from './components/ServiceManager';
+import { FileManager } from './components/FileManager';
+import { NetworkManager } from './components/NetworkManager';
+import { ActivityLog } from './components/Placeholders';
 
 const API_BASE_URL = 'http://localhost:8000/api';
 
 function App() {
+  const [activeTab, setActiveTab] = useState('overview');
   const [metrics, setMetrics] = useState<any>(null);
   const [chatMessage, setChatMessage] = useState('');
   const [chatHistory, setChatHistory] = useState<any[]>([]);
@@ -33,6 +43,11 @@ function App() {
     setChatHistory(newHistory);
     setChatMessage('');
     setIsProcessing(true);
+    
+    // Switch to assistant tab if we aren't already there
+    if (activeTab !== 'assistant') {
+      setActiveTab('assistant');
+    }
 
     try {
       const res = await axios.post(`${API_BASE_URL}/chat`, { 
@@ -47,107 +62,62 @@ function App() {
     }
   };
 
+  // Keyboard shortcut to focus assistant
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.code === 'Space') {
+        e.preventDefault();
+        setActiveTab('assistant');
+        // A short timeout to ensure the tab renders before focusing
+        setTimeout(() => {
+          const input = document.querySelector('input[type="text"]') as HTMLInputElement;
+          if (input) input.focus();
+        }, 50);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'overview':
+        return <Dashboard metrics={metrics} setActiveTab={setActiveTab} />;
+      case 'assistant':
+        return (
+          <AiAssistant 
+            chatHistory={chatHistory}
+            chatMessage={chatMessage}
+            setChatMessage={setChatMessage}
+            handleChatSubmit={handleChatSubmit}
+            isProcessing={isProcessing}
+          />
+        );
+      case 'system': return <SystemMonitor />;
+      case 'processes': return <ProcessViewer />;
+      case 'services': return <ServiceManager />;
+      case 'files': return <FileManager />;
+      case 'network': return <NetworkManager />;
+      case 'activity': return <ActivityLog />;
+      default: return <Dashboard metrics={metrics} setActiveTab={setActiveTab} />;
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 p-8 flex flex-col gap-8">
-      <header className="flex items-center gap-4 border-b border-slate-700 pb-4">
-        <Terminal className="text-teal-400 w-8 h-8" />
-        <h1 className="text-3xl font-bold tracking-tight">LinuxAI Operations Assistant</h1>
-      </header>
+    <div className="h-screen w-full flex overflow-hidden bg-linux-bg font-sans text-linux-text-primary selection:bg-linux-accent/20">
+      
+      {/* Sidebar */}
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 flex-1">
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0">
+        <Topbar metrics={metrics} />
         
-        {/* Left Column: Metrics */}
-        <div className="lg:col-span-1 space-y-6">
-          <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg">
-            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-              <Activity className="text-blue-400" /> System Metrics
-            </h2>
-            {metrics ? (
-              <div className="space-y-4">
-                <div>
-                  <div className="flex justify-between mb-1 text-sm text-slate-400">
-                    <span className="flex items-center gap-2"><Cpu className="w-4 h-4"/> CPU Usage</span>
-                    <span>{metrics.cpu_percent}%</span>
-                  </div>
-                  <div className="w-full bg-slate-700 rounded-full h-2">
-                    <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${metrics.cpu_percent}%` }}></div>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between mb-1 text-sm text-slate-400">
-                    <span className="flex items-center gap-2"><Activity className="w-4 h-4"/> RAM Usage</span>
-                    <span>{metrics.memory.percent}%</span>
-                  </div>
-                  <div className="w-full bg-slate-700 rounded-full h-2">
-                    <div className="bg-purple-500 h-2 rounded-full" style={{ width: `${metrics.memory.percent}%` }}></div>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between mb-1 text-sm text-slate-400">
-                    <span className="flex items-center gap-2"><HardDrive className="w-4 h-4"/> Disk Usage</span>
-                    <span>{metrics.disk.percent}%</span>
-                  </div>
-                  <div className="w-full bg-slate-700 rounded-full h-2">
-                    <div className="bg-teal-500 h-2 rounded-full" style={{ width: `${metrics.disk.percent}%` }}></div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <p className="text-slate-500 text-sm animate-pulse">Loading metrics...</p>
-            )}
-          </div>
-        </div>
-
-        {/* Right Column: Chat */}
-        <div className="lg:col-span-2 bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-lg flex flex-col h-[70vh]">
-          <h2 className="text-xl font-semibold mb-4 border-b border-slate-700 pb-2">AI Terminal</h2>
-          
-          <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-2">
-            {chatHistory.length === 0 && (
-              <p className="text-slate-500 text-center mt-10">Ask me anything about your Linux system...</p>
-            )}
-            {chatHistory.map((msg, i) => (
-              <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[80%] p-3 rounded-lg ${msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-200'}`}>
-                  <p className="whitespace-pre-wrap">{msg.content}</p>
-                  {msg.metadata && msg.metadata.tools_used && msg.metadata.tools_used.length > 0 && (
-                    <details className="mt-2 text-xs border-t border-slate-600 pt-2 text-slate-400">
-                      <summary className="cursor-pointer hover:text-slate-300 transition-colors">Technical Details ▼</summary>
-                      <div className="mt-2 bg-slate-800 p-2 rounded">
-                        <p><strong>Tools used:</strong> {msg.metadata.tools_used.join(', ')}</p>
-                        {msg.metadata.execution_time && <p><strong>Execution time:</strong> {msg.metadata.execution_time}s</p>}
-                      </div>
-                    </details>
-                  )}
-                </div>
-              </div>
-            ))}
-            {isProcessing && (
-              <div className="flex justify-start">
-                <div className="max-w-[80%] p-3 rounded-lg bg-slate-700 text-slate-200">
-                  <p className="flex items-center gap-2 animate-pulse">
-                    <span className="text-teal-400">🔍</span> Inspecting your system...
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <form onSubmit={handleChatSubmit} className="flex gap-2 relative">
-            <input 
-              type="text" 
-              value={chatMessage}
-              onChange={(e) => setChatMessage(e.target.value)}
-              placeholder="e.g. Why is my system slow?"
-              className="flex-1 bg-slate-900 border border-slate-600 rounded-lg px-4 py-3 focus:outline-none focus:border-teal-400 transition-colors"
-            />
-            <button type="submit" disabled={isProcessing} className={`font-semibold px-6 rounded-lg transition-colors ${isProcessing ? 'bg-slate-600 text-slate-400 cursor-not-allowed' : 'bg-teal-500 hover:bg-teal-400 text-slate-900'}`}>
-              Execute
-            </button>
-          </form>
-        </div>
-        
+        <main className="flex-1 overflow-y-auto overflow-x-hidden relative">
+          {renderContent()}
+        </main>
       </div>
+
     </div>
   );
 }

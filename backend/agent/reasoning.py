@@ -2,8 +2,11 @@ import os
 import json
 import time
 import re
+from pathlib import Path
 import google.generativeai as genai
 from agent.tools import execute_tool, AVAILABLE_TOOLS
+import inspect
+from agent.formatter import format_tool_result
 
 # Configure Gemini
 api_key = os.getenv("GEMINI_API_KEY", "")
@@ -16,7 +19,7 @@ try:
 except Exception:
     model = None
 
-# Global session store for pending actions
+# Global session store for pending actions and cwd
 SESSIONS = {}
 
 def check_approval(message: str) -> str:
@@ -47,18 +50,27 @@ def handle_chat_request(message: str, conversation_id: str = "default"):
     
     # Ensure session exists
     if conversation_id not in SESSIONS:
-        SESSIONS[conversation_id] = {"pending_action": None}
+        SESSIONS[conversation_id] = {
+            "pending_action": None,
+            "working_directory": str(Path.home())
+        }
         
     session = SESSIONS[conversation_id]
     
     # 1. Check for Pending Action
-    if session["pending_action"]:
+    if session.get("pending_action"):
         decision = check_approval(message)
         
         if decision == "approve":
             action = session["pending_action"]
             tool_name = action["tool"]
             args = action["args"]
+            
+            # Inject working directory if applicable
+            if tool_name in AVAILABLE_TOOLS:
+                sig = inspect.signature(AVAILABLE_TOOLS[tool_name])
+                if "cwd" in sig.parameters and "cwd" not in args:
+                    args["cwd"] = session["working_directory"]
             
             # Execute tool directly, bypassing prompt/approval
             session["pending_action"] = None # clear state
@@ -67,8 +79,13 @@ def handle_chat_request(message: str, conversation_id: str = "default"):
                 func = AVAILABLE_TOOLS[tool_name]
                 result = func(**args)
                 
-                # Simple verification formatting
-                response_text = f"Action `{tool_name}` executed successfully.\n\nResult:\n```json\n{json.dumps(result, indent=2)}\n```"
+                # Format result into natural language
+                response_text = format_tool_result(tool_name, result, session["working_directory"])
+                
+                # Special case: update working directory if change_directory succeeded
+                if tool_name == "change_directory" and result.get("success"):
+                    session["working_directory"] = result.get("path")
+                
                 return {
                     "response": response_text,
                     "metadata": {"tools_used": [tool_name], "execution_time": round(time.time() - start_time, 2)}
@@ -112,17 +129,30 @@ If the required information is available through a system tool, call the tool fi
 
 IMPORTANT MAPPINGS:
 - "whoami", "what user am I", "my username" -> ALWAYS use `get_current_user`
+- "pwd", "what is my current directory" -> ALWAYS use `get_working_directory`
+- "cd Downloads", "go to Documents" -> ALWAYS use `change_directory`
 - "what is my cpu" -> `get_cpu_info`
 - "what is my os" -> `get_system_identity`
 - "is nginx running" -> `get_service_status`
 
+FILESYSTEM RULES:
+- Never say you do not have the capability to create, read, or delete files if a tool exists.
+- "Is there a file named roshan.txt" -> use `search_files {{"query": "roshan.txt"}}`
+- "Create page.txt" -> use `create_file {{"path": "page.txt"}}`
+- "Read page.txt" -> use `read_file {{"path": "page.txt"}}`
+- "Delete page.txt" -> use `delete_file {{"path": "page.txt"}}`
+- "What's in my Downloads folder?" -> use `list_directory {{"path": "~/Downloads"}}`
+
+Current Session Working Directory: {session['working_directory']}
+
 You have the following tools available:
 {list(AVAILABLE_TOOLS.keys())}
 
-If you need to gather information from the system, reply with the tool name on a new line starting with TOOL: followed by its arguments as a JSON object if needed. 
+If you need to gather information from the system or perform an action, reply with the tool name on a new line starting with TOOL: followed by its arguments as a JSON object if needed. 
 Example:
 TOOL: get_service_status {{"service_name": "nginx"}}
 TOOL: get_current_user
+TOOL: create_file {{"path": "notes.txt", "content": "Hello"}}
 
 If you have gathered enough information to answer the user fully, or if no tools are needed, simply output FINAL_ANSWER: followed by your final human-friendly response.
 
@@ -179,6 +209,13 @@ What is your next step? (Choose one TOOL or FINAL_ANSWER)
                 
             if tool_to_run and tool_to_run in AVAILABLE_TOOLS:
                 tools_used.append(tool_to_run)
+                
+                # Inject cwd for tools called by the agent
+                if tool_to_run in AVAILABLE_TOOLS:
+                    sig = inspect.signature(AVAILABLE_TOOLS[tool_to_run])
+                    if "cwd" in sig.parameters and "cwd" not in tool_args:
+                        tool_args["cwd"] = session["working_directory"]
+                
                 tool_result = execute_tool(tool_to_run, **tool_args)
                 
                 if tool_result.get("status") == "pending_approval":
@@ -198,7 +235,24 @@ What is your next step? (Choose one TOOL or FINAL_ANSWER)
                         }
                     }
                 else:
-                    tool_results_context += f"\\nTool: {tool_to_run}\\nArgs: {json.dumps(tool_args)}\\nResult: {json.dumps(tool_result.get('result'), default=str)}\\n"
+                    result_data = tool_result.get('result', {})
+                    
+                    # Intercept safe action formatting and state updates immediately
+                    if tool_to_run == "change_directory" and result_data.get("success"):
+                        session["working_directory"] = result_data.get("path")
+                        formatted_response = format_tool_result(tool_to_run, result_data, session["working_directory"])
+                        return {
+                            "response": formatted_response,
+                            "metadata": {"tools_used": tools_used, "execution_time": round(time.time() - start_time, 2)}
+                        }
+                    elif tool_to_run == "get_working_directory":
+                        formatted_response = format_tool_result(tool_to_run, result_data, session["working_directory"])
+                        return {
+                            "response": formatted_response,
+                            "metadata": {"tools_used": tools_used, "execution_time": round(time.time() - start_time, 2)}
+                        }
+                        
+                    tool_results_context += f"\\nTool: {tool_to_run}\\nArgs: {json.dumps(tool_args)}\\nResult: {json.dumps(result_data, default=str)}\\n"
             else:
                 tool_results_context += f"\\nTool: {tool_to_run}\\nResult: Error - Tool not found.\\n"
                 
