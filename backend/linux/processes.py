@@ -1,16 +1,19 @@
 import psutil
 
-def get_top_processes(limit=10):
-    """Get the top running processes sorted by memory usage."""
+def get_top_processes(limit=50, search: str = None):
+    """Get the top running processes sorted by memory usage, with optional search."""
     procs = []
-    for p in psutil.process_iter(['pid', 'name', 'username', 'memory_percent', 'cpu_percent']):
+    for p in psutil.process_iter(['pid', 'name', 'username', 'memory_percent', 'cpu_percent', 'status']):
         try:
-            procs.append(p.info)
+            info = p.info
+            if search and search.lower() not in (info.get('name') or '').lower():
+                continue
+            procs.append(info)
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             pass
             
-    # Sort by memory percent descending
-    procs = sorted(procs, key=lambda p: p['memory_percent'] if p['memory_percent'] else 0, reverse=True)
+    # Sort by CPU percent descending
+    procs = sorted(procs, key=lambda p: p['cpu_percent'] if p['cpu_percent'] else 0, reverse=True)
     return procs[:limit]
 
 def kill_process(pid: int):

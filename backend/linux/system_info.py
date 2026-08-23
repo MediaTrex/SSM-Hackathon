@@ -142,3 +142,20 @@ def get_network_info():
     except Exception:
         pass
     return {"interfaces": interfaces}
+
+def get_uptime():
+    """Retrieve system uptime."""
+    try:
+        with open('/proc/uptime', 'r') as f:
+            uptime_seconds = float(f.readline().split()[0])
+            return {"uptime_seconds": uptime_seconds}
+    except Exception:
+        return {"uptime_seconds": 0}
+
+def get_load_average():
+    """Retrieve system load average."""
+    try:
+        return {"load_average": os.getloadavg()}
+    except Exception:
+        return {"load_average": [0, 0, 0]}
+

@@ -15,7 +15,9 @@ def get_tool_metadata(tool_name: str) -> Dict[str, Any]:
         "get_system_stats", "get_processes", "get_network_info", 
         "get_service_status", "get_service_logs", "search_files", 
         "get_file_information", "get_hostname", "get_os_version", 
-        "get_kernel_version", "get_uptime"
+        "get_kernel_version", "get_uptime", "get_load_average",
+        "read_file", "list_directory", "get_file_permissions",
+        "get_working_directory", "change_directory", "list_services"
     ]:
         return {
             "name": tool_name,
@@ -25,11 +27,23 @@ def get_tool_metadata(tool_name: str) -> Dict[str, Any]:
         }
         
     # Medium risk tools (requires confirmation)
-    if tool_name in ["kill_process", "restart_service", "stop_service", "start_service"]:
+    if tool_name in [
+        "kill_process", "restart_service", "stop_service", "start_service",
+        "create_file", "write_file", "append_file", "rename_file", "copy_file"
+    ]:
         return {
             "name": tool_name,
             "read_only": False,
             "risk_level": RiskLevel.MEDIUM,
+            "requires_confirmation": True
+        }
+
+    # High risk tools (requires confirmation)
+    if tool_name in ["delete_file", "delete_directory"]:
+        return {
+            "name": tool_name,
+            "read_only": False,
+            "risk_level": RiskLevel.HIGH,
             "requires_confirmation": True
         }
         
