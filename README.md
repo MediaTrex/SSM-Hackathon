@@ -12,7 +12,7 @@ Team Name: Tech nuggets<br>
 | Safwan Shaik | Linux System Integration                    |
 | Nitheesh S | React/Electron UI + Dashboard               |
 | Sreekuttan S | Filesystem + Processes + Services + Testing |
-| Vipul Raj Shah | Backend + Security + APIs                   |
+| Vipul Raj Shah | Backend + Security + APIs + ML Engineer  |                  |
 
 ## Problem Statement
 
