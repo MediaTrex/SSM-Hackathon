@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Terminal, LayoutDashboard, Cpu, Activity,
-  Box, HardDrive, Network, User, Folder
+  Box, HardDrive, Network, Folder
 } from 'lucide-react';
 
 interface SidebarProps {
