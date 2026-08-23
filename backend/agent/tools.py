@@ -1,5 +1,5 @@
 from linux import system, processes, system_info, services, files
-from security.risk_classifier import classify_action, RiskLevel, get_tool_metadata
+from security.risk_engine import assess_risk, RiskLevel
 
 # These are the tools that the AI can use. We map function names to their implementations.
 AVAILABLE_TOOLS = {
@@ -39,18 +39,18 @@ def execute_tool(tool_name: str, **kwargs):
     if tool_name not in AVAILABLE_TOOLS:
         return {"error": "Tool not found", "status": "failed"}
         
-    meta = get_tool_metadata(tool_name)
+    risk_level, confirmation_msg = assess_risk(tool_name, **kwargs)
     
-    if meta["requires_confirmation"]:
+    if confirmation_msg:
         return {
             "status": "pending_approval",
             "tool": tool_name,
             "args": kwargs,
-            "risk": meta["risk_level"].value,
-            "reason": f"Execution of {tool_name} requires your approval."
+            "risk": risk_level.value,
+            "reason": confirmation_msg
         }
         
-    # Execute immediately for read_only/no_confirmation tools
+    # Execute immediately if no confirmation is required
     try:
         func = AVAILABLE_TOOLS[tool_name]
         result = func(**kwargs)

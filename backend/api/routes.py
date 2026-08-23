@@ -2,6 +2,7 @@ from fastapi import APIRouter, Query
 from pydantic import BaseModel
 from linux import system, processes, services, files, system_info
 from agent.reasoning import handle_chat_request
+from api.activity_store import get_activities
 from typing import Optional
 
 router = APIRouter()
@@ -40,6 +41,10 @@ def get_files(path: str = ".", cwd: Optional[str] = None):
 @router.get("/network")
 def get_network():
     return system_info.get_network_info()
+
+@router.get("/activity")
+def get_activity():
+    return {"activities": get_activities()}
 
 @router.post("/chat")
 def chat(request: ChatRequest):

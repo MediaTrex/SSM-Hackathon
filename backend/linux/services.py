@@ -15,6 +15,8 @@ def get_service_status(service_name: str):
             "status_output": result.stdout if result.stdout else result.stderr,
             "is_active": result.returncode == 0
         }
+    except FileNotFoundError:
+        return {"error": "Service management is unavailable because this Linux system does not use systemd.", "service": service_name}
     except Exception as e:
         return {"error": str(e), "service": service_name}
 
@@ -32,6 +34,8 @@ def get_service_logs(service_name: str, lines: int = 50):
             "service": service_name,
             "logs": result.stdout if result.stdout else result.stderr
         }
+    except FileNotFoundError:
+        return {"error": "Service management is unavailable because this Linux system does not use systemd.", "service": service_name}
     except Exception as e:
         return {"error": str(e), "service": service_name}
 
@@ -68,6 +72,8 @@ def list_services():
                     "description": description
                 })
         return {"services": services}
+    except FileNotFoundError:
+        return {"error": "Service management is unavailable because this Linux system does not use systemd."}
     except Exception as e:
         return {"error": str(e)}
 

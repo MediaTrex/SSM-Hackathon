@@ -1,6 +1,6 @@
 import React from 'react';
-import { 
-  Terminal, LayoutDashboard, Cpu, Activity, 
+import {
+  Terminal, LayoutDashboard, Cpu, Activity,
   Box, HardDrive, Network, User, Folder
 } from 'lucide-react';
 
@@ -32,7 +32,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
           <p className="text-[10px] text-linux-text-muted uppercase tracking-wider">System Online</p>
         </div>
       </div>
-
+      {/* comt */}
       <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
         {TABS.map((tab) => {
           const Icon = tab.icon;
@@ -41,11 +41,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors ${
-                isActive 
-                  ? 'bg-linux-card text-linux-accent border border-linux-border shadow-sm' 
+              className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors ${isActive
+                  ? 'bg-linux-card text-linux-accent border border-linux-border shadow-sm'
                   : 'text-linux-text-secondary hover:text-linux-text-primary hover:bg-linux-card/50 border border-transparent'
-              }`}
+                }`}
             >
               <Icon size={16} className={isActive ? 'text-linux-accent' : 'text-linux-text-muted'} />
               <span>{tab.label}</span>
@@ -55,10 +54,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
       </nav>
 
       <div className="p-4 border-t border-linux-border bg-linux-surface text-xs space-y-3">
-        <div className="flex items-center gap-2 text-linux-text-secondary">
+        {/* <div className="flex items-center gap-2 text-linux-text-secondary">
           <User size={14} className="text-linux-text-muted" />
           <span className="mono">● roshan</span>
-        </div>
+        </div> */}
         <div className="flex items-center gap-2 text-linux-text-secondary">
           <Folder size={14} className="text-linux-text-muted" />
           <span className="mono truncate">~/Downloads</span>

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Network, Activity } from 'lucide-react';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 export const NetworkManager = () => {
   const [networkInfo, setNetworkInfo] = useState<any>(null);
@@ -49,7 +49,7 @@ export const NetworkManager = () => {
 
   return (
     <div className="p-8 max-w-6xl mx-auto w-full space-y-8">
-      
+
       <div className="flex justify-between items-end border-b border-linux-border pb-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-linux-text-primary">NETWORK</h1>
@@ -72,7 +72,7 @@ export const NetworkManager = () => {
                 UP
               </div>
             </div>
-            
+
             <div className="space-y-4 text-sm mono">
               <div>
                 <div className="text-[10px] text-linux-text-muted uppercase tracking-widest mb-1 font-sans">IPv4 Address</div>

@@ -9,9 +9,9 @@ import { ProcessViewer } from './components/ProcessViewer';
 import { ServiceManager } from './components/ServiceManager';
 import { FileManager } from './components/FileManager';
 import { NetworkManager } from './components/NetworkManager';
-import { ActivityLog } from './components/Placeholders';
+import { ActivityLog } from './components/ActivityLog';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 function App() {
   const [activeTab, setActiveTab] = useState('overview');
