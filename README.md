@@ -1,4 +1,4 @@
-![LinuxAI Banner](../linuxai/docs/banner.png)
+![LinuxAI Banner](./docs/banner.png)
 
 # SSM Hackathon 
 
