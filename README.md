@@ -1,7 +1,16 @@
 # SSM Hackathon 
 
-Team Name: </b>
+Team Name: Tech nuggets<br>
 Project Title: **LinuxAI Operations Assistant**
+
+## Contributors
+| Member   | Responsibility                              |
+| -------- | ------------------------------------------- |
+| Roshan Patel | AI Agent + LLM + Tool Calling               |
+| Safwan Shaik | Linux System Integration                    |
+| Nitheesh S | React/Electron UI + Dashboard               |
+| Sreekuttan S | Filesystem + Processes + Services + Testing |
+| Vipul Raj Shah | Backend + Security + APIs                   |
 
 ## Problem Statement
 
@@ -33,3 +42,102 @@ npm run dev
 ```
 Now, Visit 
 <a>http://localhost:5173</a>
+
+## System Architecture
+```mermaid
+flowchart TD
+
+    A[User] --> B[LinuxAI Desktop Application]
+
+    B --> C[React UI]
+
+    C --> D[Local FastAPI Backend]
+
+    D --> E[AI Agent]
+
+    E --> F{Intent Detection}
+
+    F --> G[System Tools]
+    F --> H[Filesystem Tools]
+    F --> I[Process Tools]
+    F --> J[Service Tools]
+    F --> K[Network Tools]
+
+    G --> L[Linux OS]
+    H --> L
+    I --> L
+    J --> L
+    K --> L
+
+    L --> M[Real-Time System Data]
+
+    M --> N[Tool Result]
+
+    N --> O[Verification Layer]
+
+    O --> P[Natural Language Response]
+
+    P --> C
+```
+
+## AI Request Workflow
+```mermaid
+sequenceDiagram
+
+    participant U as User
+    participant UI as LinuxAI UI
+    participant API as Local Backend
+    participant AI as AI Agent
+    participant T as System Tool
+    participant OS as Linux OS
+    participant V as Verification
+
+    U->>UI: "Why is my system slow?"
+    UI->>API: User request
+
+    API->>AI: Analyze intent
+
+    AI->>AI: Select required tools
+
+    AI->>T: Get CPU/RAM/Process data
+
+    T->>OS: Inspect system
+
+    OS-->>T: Real system data
+
+    T-->>AI: Tool results
+
+    AI->>V: Verify data
+
+    V-->>AI: Verified
+
+    AI->>API: Generate explanation
+
+    API-->>UI: Natural language response
+
+    UI-->>U: System diagnosis
+```
+## Real Time Monitoring Architecture
+```mermaid
+flowchart LR
+
+    OS[Linux Kernel]
+
+    OS --> CPU[/proc + psutil/]
+    OS --> MEM[/proc/meminfo/]
+    OS --> DISK[Filesystem APIs]
+    OS --> PROC[/proc processes/]
+    OS --> NET[Network APIs]
+    OS --> SYS[systemd]
+
+    CPU --> MON[System Monitor]
+    MEM --> MON
+    DISK --> MON
+    PROC --> MON
+    NET --> MON
+    SYS --> MON
+
+    MON --> WS[WebSocket / API]
+
+    WS --> UI[LinuxAI Dashboard]
+```
