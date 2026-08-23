@@ -45,6 +45,25 @@ npm run dev
 Now, Visit 
 <a>http://localhost:5173</a>
 
+## Project Screenshots
+
+### LinuxAI - Complete UI Overview
+
+<table>
+  <tr>
+    <td align="center"><img src="./docs/screenshots/1.jpeg" width="600" alt="Overview"><br></td>
+    <td align="center"><img src="./docs/screenshots/2.jpeg" width="600" alt="Assisstant"><br></td>
+    <td align="center"><img src="./docs/screenshots/4.jpeg" width="600" alt="System"><br></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="./docs/screenshots/5.jpeg" width="600" alt="Processes"><br></td>
+    <td align="center"><img src="./docs/screenshots/7.jpeg" width="600" alt="Network"><br></td>
+    <td align="center"><img src="./docs/screenshots/8.jpeg" width="600" alt="Reports"><br>
+    <strong><a href="./docs/screenshots">more...</a></strong></td>
+  </tr>
+</table>
+
+
 ## System Architecture
 ```mermaid
 flowchart TD
